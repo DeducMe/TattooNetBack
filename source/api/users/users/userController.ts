@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { errorHandler, sendBackHandler } from '../../../functions/apiHandlers';
+import { decodeToken, errorHandler, sendBackHandler } from '../../../functions/apiHandlers';
 import User from './userModal';
 import Profile from '../profile/profileModal';
+import Countries from '../../../common/countries.json';
 
 import bcrypt from 'bcrypt';
 import jsonWebToken from 'jsonwebtoken';
 import { JWT_SECRET_TOKEN } from '../../../config/config';
+import profileModal from '../profile/profileModal';
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -73,6 +75,31 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const updateUserLocation = async (req: Request, res: Response, next: NextFunction) => {
+    let { userLocation, country } = req.body;
+    const decoded = await decodeToken(req?.headers?.authorization || '');
+    if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
+    if (!country) return errorHandler(res, 'country param is required', 405);
+
+    const countryPolygon = Countries.features.find((item: any) => {
+        const props = item.properties;
+        return props.ADMIN.toLowerCase() === country.toLowerCase() || props.ISO_A3.toLowerCase() === country.toLowerCase();
+    });
+
+    console.log(countryPolygon);
+    if (!countryPolygon) return errorHandler(res, 'No country has been found', 405);
+    const data = await profileModal
+        .findOneAndUpdate(
+            { userId: decoded.id },
+            { userLocation, country },
+            {
+                returnOriginal: false
+            }
+        )
+        .exec();
+
+    sendBackHandler(res, 'users', data);
+};
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
     let { ids } = req.body;
     const data = await User.find({ _id: { $in: ids } }).exec();
@@ -84,4 +111,4 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     sendBackHandler(res, 'users', data);
 };
 
-export default { create, login, getAll, getUser };
+export default { create, login, getAll, getUser, updateUserLocation };

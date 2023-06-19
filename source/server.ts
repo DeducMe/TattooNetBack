@@ -8,6 +8,8 @@ import config from './config/config';
 import profileRoute from './api/users/profile/profileRoute';
 import usersDataRoute from './api/users/users/userRoute';
 import tattoosRoute from './api/tattoos/tattoosRoute';
+import cityRoute from './api/city/cityRoute';
+import countryRoute from './api/country/countryRoute';
 
 // @ts-ignore
 import docs from 'express-mongoose-docs';
@@ -77,6 +79,8 @@ app.use('/api/', profileRoute);
 app.use('/api/', tattoosRoute);
 app.use('/api/', categoriesRoute);
 app.use('/api/', currencyRoute);
+app.use('/api/', cityRoute);
+app.use('/api/', countryRoute);
 
 app.delete('/api/wipe', async (req, res, next) => {
     mongoose.connection.dropDatabase();

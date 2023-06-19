@@ -17,6 +17,7 @@ const MasterSchema: Schema = new Schema(
     {
         name: { type: Schema.Types.String, required: false },
         description: { type: Schema.Types.String, required: false },
+
         avatar: { type: Schema.Types.String, required: false },
         salonId: { type: Schema.Types.ObjectId, ref: 'Salon', required: false },
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: false }

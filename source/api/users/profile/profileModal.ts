@@ -1,12 +1,17 @@
 import mongoose, { Schema } from 'mongoose';
 import logging from '../../../config/logging';
 import Profile from './profileInterface';
+import { pointSchema } from '../../city/cityModal';
 
 const ProfileSchema: Schema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, required: true },
         name: { type: Schema.Types.String, required: false },
         type: { type: Schema.Types.String, required: false },
+        address: { type: Schema.Types.String, required: false },
+        location: {
+            type: pointSchema
+        },
         avatar: { type: Schema.Types.String, required: false },
         currencySet: { type: Schema.Types.ObjectId, ref: 'Currency', required: false },
         total: { type: Schema.Types.Number, required: false }
