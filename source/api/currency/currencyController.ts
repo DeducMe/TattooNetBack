@@ -179,8 +179,10 @@ const currenciesObj = [
 ];
 
 const initCurrencies = async (req: Request, res: Response, next: NextFunction) => {
+    console.log('alo');
     try {
         await Currency.collection.drop();
+        console.log('wtf');
 
         for (let index = 0; index < currenciesObj.length; index++) {
             const item = currenciesObj[index];
@@ -190,6 +192,8 @@ const initCurrencies = async (req: Request, res: Response, next: NextFunction) =
 
             await currency.save();
         }
+
+        console.log('wtf');
 
         sendBackHandler(res, 'currency', true);
     } catch (e) {

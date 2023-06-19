@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { decodeToken, errorHandler, sendBackHandler } from '../../functions/apiHandlers';
-import Tattoos from './tattoosModal';
+import Tattoos, { ITattoos } from './tattoosModal';
 
 import profileModal from '../users/profile/profileModal';
 
@@ -27,7 +27,7 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { name, description, categories, price, currency, image, salonId, masterId } = req.body;
+        let { name, description, categories, price, currency, tattooImages, salonId, masterId, type } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
@@ -35,7 +35,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         //TODO check if user is associated with salon or tattoo
         //userId: decoded.id
 
-        const data = await new Tattoos({ name, description, categories, price, currency, image, masterId, salonId }).save();
+        const data = await new Tattoos({ name, description, categories, price, currency, tattooImages, type, masterId, salonId }).save();
 
         sendBackHandler(res, 'tattoos', data);
     } catch (e) {
@@ -91,9 +91,29 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const data = await Tattoos.find({ ...additionalFilters })
-        .populate(['type', 'categories', 'currency'])
+        .populate(['categories', 'currency'])
         .exec();
     sendBackHandler(res, 'tattoos', data);
+};
+
+const getMasterTattoos = async (req: Request, res: Response, next: NextFunction) => {
+    let { id } = req.body;
+
+    const decoded = await decodeToken(req?.headers?.authorization || '');
+    if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
+
+    const result: { portfolio: ITattoos[]; available: ITattoos[] } = {
+        portfolio: [],
+        available: []
+    };
+
+    const data = await Tattoos.find({ masterId: id }).populate(['categories', 'currency']).exec();
+    data.forEach((item) => {
+        if (`${item.type}` === 'available') return result.available.push(item);
+        if (`${item.type}` === 'completed') return result.portfolio.push(item);
+    });
+
+    sendBackHandler(res, 'tattoos', result);
 };
 
 const getFilterVariants = async (req: Request, res: Response, next: NextFunction) => {
@@ -122,4 +142,4 @@ const getFilterVariants = async (req: Request, res: Response, next: NextFunction
     sendBackHandler(res, 'tattoos', data);
 };
 
-export default { getAll, create, put, deleteRow, getFilterVariants };
+export default { getAll, getMasterTattoos, create, put, deleteRow, getFilterVariants };
