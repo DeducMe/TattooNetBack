@@ -18,7 +18,12 @@ const CountrySchema: Schema = new Schema(
         centerLocation: { type: pointSchema, required: false },
         geometryLocation: {
             type: multiPolygonSchema
-        }
+        },
+        code: { type: Schema.Types.String, required: false },
+        emoji: { type: Schema.Types.String, required: false },
+        unicode: { type: Schema.Types.String, required: false },
+        image: { type: Schema.Types.String, required: false },
+        dial_code: { type: Schema.Types.String, required: false }
     },
     {
         timestamps: false
