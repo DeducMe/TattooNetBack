@@ -22,8 +22,8 @@ export function sendBackHandler(res: Response, dataName: string, data: any) {
 export function errorHandler(res: Response, error: any, code?: number) {
     return Promise.resolve().then(() => {
         return res.status(code ? code : res.statusCode === 200 ? 500 : res.statusCode).json({
-            message: error.message,
-            ...error.errors
+            message: error?.message || `${error}`,
+            ...error?.errors
         });
     });
 }

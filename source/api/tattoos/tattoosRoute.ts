@@ -7,6 +7,6 @@ router.post('/tattoos', controller.create);
 router.post('/tattoos/list', controller.getAll);
 router.delete('/tattoos/delete', controller.deleteRow);
 router.get('/tattoos/filters', controller.getFilterVariants);
-router.get('/tattoos/master', controller.getMasterTattoos);
+router.post('/tattoos/master', controller.getMasterTattoos);
 
 export default router;

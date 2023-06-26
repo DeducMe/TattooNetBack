@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { decodeToken, errorHandler, sendBackHandler } from '../../functions/apiHandlers';
 import City from './cityModal';
-import Cities from '../../common/cities.json';
+// import Cities from '../../common/cities.json';
 import countryModal from '../country/countryModal';
 
 const init = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,50 +15,50 @@ const init = async (req: Request, res: Response, next: NextFunction) => {
         // Also mongo struggles to connect cities with Russia, cause it overlaps over two hemispheres. I need a way to make it work somehow or find some other solution
         //First solution is to add cities inside initCountries and merge cities and countries together in one request
 
-        for (let index = 0; index < Cities.features.length; index++) {
-            const item = Cities.features[index];
-            let { NAME } = item.properties;
-            NAME = NAME.toLowerCase();
+        // for (let index = 0; index < Cities.features.length; index++) {
+        //     const item = Cities.features[index];
+        //     let { NAME } = item.properties;
+        //     NAME = NAME.toLowerCase();
 
-            //     let country = await countryModal
-            //         .findOne({
-            //             geometryLocation: {
-            //                 $geoIntersects: {
-            //                     $geometry: item.geometry
-            //                 }
-            //             }
-            //         })
-            //         .select('-geometryLocation');
+        //     //     let country = await countryModal
+        //     //         .findOne({
+        //     //             geometryLocation: {
+        //     //                 $geoIntersects: {
+        //     //                     $geometry: item.geometry
+        //     //                 }
+        //     //             }
+        //     //         })
+        //     //         .select('-geometryLocation');
 
-            //     //this doesnt work. Cant understand why mongo dont find some of the cities
-            //     // if (!country?._id) {
-            //     // console.log('trying to find further', item.geometry);
-            //     // try {
-            //     //     const countriesFound = await countryModal.find({
-            //     //         geometryLocation: {
-            //     //             $geoWithin: {
-            //     //                 $geometry: {
-            //     //                     ...item.geometry,
+        //     //     //this doesnt work. Cant understand why mongo dont find some of the cities
+        //     //     // if (!country?._id) {
+        //     //     // console.log('trying to find further', item.geometry);
+        //     //     // try {
+        //     //     //     const countriesFound = await countryModal.find({
+        //     //     //         geometryLocation: {
+        //     //     //             $geoWithin: {
+        //     //     //                 $geometry: {
+        //     //     //                     ...item.geometry,
 
-            //     //                     crs: {
-            //     //                         type: 'name',
-            //     //                         properties: { name: 'urn:x-mongodb:crs:strictwinding:EPSG:4326' }
-            //     //                     }
-            //     //                 }
-            //     //             }
-            //     //         }
-            //     //     });
+        //     //     //                     crs: {
+        //     //     //                         type: 'name',
+        //     //     //                         properties: { name: 'urn:x-mongodb:crs:strictwinding:EPSG:4326' }
+        //     //     //                     }
+        //     //     //                 }
+        //     //     //             }
+        //     //     //         }
+        //     //     //     });
 
-            //     //     country = null;
+        //     //     //     country = null;
 
-            //     //     console.log(countriesFound.map((item) => item.name));
-            //     // } catch (e) {
-            //     //     console.log(e, 'err');
-            //     // }
-            //     // }
-            console.log(NAME);
-            await City.replaceOne({ name: NAME }, { name: NAME.charAt(0).toUpperCase() + NAME.slice(1), geometryLocation: item.geometry, country: null }, { upsert: true });
-        }
+        //     //     //     console.log(countriesFound.map((item) => item.name));
+        //     //     // } catch (e) {
+        //     //     //     console.log(e, 'err');
+        //     //     // }
+        //     //     // }
+        //     console.log(NAME);
+        //     await City.replaceOne({ name: NAME }, { name: NAME.charAt(0).toUpperCase() + NAME.slice(1), geometryLocation: item.geometry, country: null }, { upsert: true });
+        // }
 
         sendBackHandler(res, 'city', true);
     } catch (e) {

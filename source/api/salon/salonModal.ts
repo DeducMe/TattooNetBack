@@ -9,7 +9,7 @@ export interface ISalon extends Document {
     price: number;
     image: string;
     description: Schema.Types.String;
-    masterId: Schema.Types.ObjectId;
+    masterProfileId: Schema.Types.ObjectId;
     salonId: Schema.Types.ObjectId;
     address: Schema.Types.ObjectId;
 }

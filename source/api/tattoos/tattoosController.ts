@@ -6,7 +6,7 @@ import profileModal from '../users/profile/profileModal';
 
 const put = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { _id, name, description, categories, price, currency, image, salonId, masterId } = req.body;
+        let { _id, name, description, categories, price, currency, image, salonId } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
@@ -17,7 +17,7 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
         const tattooToUpdate = await Tattoos.findOne({ userProfileId: profile.id, _id: _id });
         if (!tattooToUpdate) return errorHandler(res, { message: 'Tattoo was not found' }, 422);
 
-        const data = await tattooToUpdate.updateOne({ name, description, categories, price, currency, image, salonId, masterId }).exec();
+        const data = await tattooToUpdate.updateOne({ name, description, categories, price, currency, image, salonId, masterProfile: profile._id }).exec();
 
         sendBackHandler(res, 'tattoos', data);
     } catch (e) {
@@ -27,15 +27,24 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { name, description, categories, price, currency, tattooImages, salonId, masterId, type } = req.body;
+        let { name, description, categories, price, currency, images, salonId, masterProfile, type } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
-        //TODO check if user is associated with salon or tattoo
+        //TODO check if user is associated with tattoo
         //userId: decoded.id
 
-        const data = await new Tattoos({ name, description, categories, price, currency, tattooImages, type, masterId, salonId }).save();
+        if (!masterProfile) {
+            const profile = await profileModal.findOne({ userId: decoded.id });
+            if (!profile) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
+
+            if (`${profile?.type}` !== 'master') return errorHandler(res, { message: 'You arent a master' }, 500);
+
+            masterProfile = profile._id;
+        }
+
+        const data = await new Tattoos({ name, description, categories, price, currency, images, type, masterProfile, salonId }).save();
 
         sendBackHandler(res, 'tattoos', data);
     } catch (e) {
@@ -98,6 +107,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const getMasterTattoos = async (req: Request, res: Response, next: NextFunction) => {
     let { id } = req.body;
+    if (!id) return errorHandler(res, 'No id passed', 422);
 
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
@@ -107,7 +117,7 @@ const getMasterTattoos = async (req: Request, res: Response, next: NextFunction)
         available: []
     };
 
-    const data = await Tattoos.find({ masterId: id }).populate(['categories', 'currency']).exec();
+    const data = await Tattoos.find({ masterProfile: id }).populate(['categories', 'currency', 'masterProfile']).exec();
     data.forEach((item) => {
         if (`${item.type}` === 'available') return result.available.push(item);
         if (`${item.type}` === 'completed') return result.portfolio.push(item);
