@@ -35,6 +35,28 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
     sendBackHandler(res, 'profile', true);
 };
 
+const search = async (req: Request, res: Response, next: NextFunction) => {
+    const decoded = await decodeToken(req?.headers?.authorization || '');
+    if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
+
+    let { query, _id } = req.body;
+
+    const additionalFilters: any = {};
+
+    if (typeof query === 'string') {
+        const regex = new RegExp(query, 'i');
+
+        additionalFilters.name = regex;
+    }
+
+    if (_id) {
+        additionalFilters._id = _id;
+    }
+
+    const result = await Profile.find(additionalFilters);
+    sendBackHandler(res, 'profile', result);
+};
+
 const setCurrency = async (req: Request, res: Response, next: NextFunction) => {
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
@@ -49,4 +71,4 @@ const setCurrency = async (req: Request, res: Response, next: NextFunction) => {
     sendBackHandler(res, 'profile', true);
 };
 
-export default { get, put, setCurrency };
+export default { search, get, put, setCurrency };

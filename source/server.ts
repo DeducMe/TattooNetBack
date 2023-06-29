@@ -16,6 +16,8 @@ import docs from 'express-mongoose-docs';
 import { checkAuthToken, errorHandler } from './functions/apiHandlers';
 import categoriesRoute from './api/categories/categoriesRoute';
 import currencyRoute from './api/currency/currencyRoute';
+import reviewsRoute from './api/reviews/reviewsRoute';
+import feedRoute from './api/feed/feedRoute';
 
 // import errorHandler from './errorHandling';
 const NAMESPACE = 'Server';
@@ -81,6 +83,8 @@ app.use('/api/', categoriesRoute);
 app.use('/api/', currencyRoute);
 app.use('/api/', cityRoute);
 app.use('/api/', countryRoute);
+app.use('/api/', reviewsRoute);
+app.use('/api/', feedRoute);
 
 app.delete('/api/wipe', async (req, res, next) => {
     mongoose.connection.dropDatabase();

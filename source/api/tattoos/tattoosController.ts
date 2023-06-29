@@ -3,10 +3,11 @@ import { decodeToken, errorHandler, sendBackHandler } from '../../functions/apiH
 import Tattoos, { ITattoos } from './tattoosModal';
 
 import profileModal from '../users/profile/profileModal';
+import reviewsModal from '../reviews/reviewsModal';
 
 const put = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { _id, name, description, categories, price, currency, image, salonId } = req.body;
+        let { _id, name, description, categories, price, currency, image, userProfileId } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
@@ -14,10 +15,10 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
         const profile = await profileModal.findOne({ userId: decoded.id });
         if (!profile) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
 
-        const tattooToUpdate = await Tattoos.findOne({ userProfileId: profile.id, _id: _id });
+        const tattooToUpdate = await Tattoos.findOne({ masterProfile: profile.id, _id: _id });
         if (!tattooToUpdate) return errorHandler(res, { message: 'Tattoo was not found' }, 422);
 
-        const data = await tattooToUpdate.updateOne({ name, description, categories, price, currency, image, salonId, masterProfile: profile._id }).exec();
+        const data = await tattooToUpdate.updateOne({ name, description, categories, price, currency, image, userProfileId, masterProfile: profile._id }).exec();
 
         sendBackHandler(res, 'tattoos', data);
     } catch (e) {
@@ -27,7 +28,7 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { name, description, categories, price, currency, images, salonId, masterProfile, type } = req.body;
+        let { name, description, categories, price, currency, images, userProfileId, masterProfile, type } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
@@ -44,7 +45,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
             masterProfile = profile._id;
         }
 
-        const data = await new Tattoos({ name, description, categories, price, currency, images, type, masterProfile, salonId }).save();
+        const data = await new Tattoos({ name, description, categories, price, currency, images, type, masterProfile, userProfileId }).save();
 
         sendBackHandler(res, 'tattoos', data);
     } catch (e) {
@@ -61,10 +62,13 @@ const deleteRow = async (req: Request, res: Response, next: NextFunction) => {
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
 
-        //TODO check if user is associated with salon or tattoo
-        //userId: decoded.id
+        const review = await reviewsModal.findOne({ tattooId: _id });
+        if (review) return errorHandler(res, { message: 'You cant delete tattoo with reviews, please contact our support' }, 422);
 
-        const foundedTattoo = await Tattoos.findOne({ _id });
+        const profile = await profileModal.findOne({ userId: decoded.id });
+        if (!profile) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
+
+        const foundedTattoo = await Tattoos.findOne({ _id, masterProfile: profile.id });
         if (!foundedTattoo) return errorHandler(res, { message: `Cant find tattoo ` }, 422);
 
         await foundedTattoo.deleteOne();

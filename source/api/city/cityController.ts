@@ -67,26 +67,6 @@ const init = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
-    let { filters } = req.body;
-
-    const additionalFilters: any = {};
-
-    if (typeof filters?.priceMin === 'number' || typeof filters?.priceMax === 'number') {
-        additionalFilters.price = {};
-        if (typeof filters.priceMin === 'number') additionalFilters.price.$gte = filters?.priceMin;
-        if (typeof filters.priceMax === 'number') additionalFilters.price.$lt = filters?.priceMax;
-    }
-
-    if (filters?.categories?.length) {
-        additionalFilters.categories = { $in: filters.categories };
-    }
-
-    if (typeof filters?.query === 'string') {
-        const regex = new RegExp(filters?.query, 'i');
-
-        additionalFilters.name = regex;
-    }
-
     const data = await City.find({})
         .select('-geometryLocation')
         .populate({

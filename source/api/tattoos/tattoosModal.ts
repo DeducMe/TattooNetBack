@@ -9,8 +9,8 @@ export interface ITattoos extends Document {
     price: number;
     description: Schema.Types.String;
     masterProfile: Schema.Types.ObjectId;
-    salonId: Schema.Types.ObjectId;
-    type: Schema.Types.String;
+    userProfileId: Schema.Types.ObjectId;
+    type: string;
 }
 
 const TattoosSchema: Schema = new Schema(
@@ -22,7 +22,7 @@ const TattoosSchema: Schema = new Schema(
         images: [{ type: Schema.Types.String, required: false }],
         categories: [{ type: Schema.Types.ObjectId, ref: 'Categories', required: false }],
         currency: { type: Schema.Types.ObjectId, ref: 'Currency', required: false },
-        salonId: { type: Schema.Types.ObjectId, ref: 'Salon', required: false },
+        userProfileId: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },
         masterProfile: { type: Schema.Types.ObjectId, ref: 'Profile', required: false }
     },
     {
