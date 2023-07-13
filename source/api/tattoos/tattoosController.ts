@@ -104,7 +104,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const data = await Tattoos.find({ ...additionalFilters })
-        .populate(['categories', 'currency'])
+        .populate(['categories', 'currency', 'reviews'])
         .exec();
     sendBackHandler(res, 'tattoos', data);
 };
@@ -121,7 +121,7 @@ const getMasterTattoos = async (req: Request, res: Response, next: NextFunction)
         available: []
     };
 
-    const data = await Tattoos.find({ masterProfile: id }).populate(['categories', 'currency', 'masterProfile']).exec();
+    const data = await Tattoos.find({ masterProfile: id }).populate(['categories', 'currency', 'masterProfile', 'reviews']).exec();
     data.forEach((item) => {
         if (`${item.type}` === 'available') return result.available.push(item);
         if (`${item.type}` === 'completed') return result.portfolio.push(item);

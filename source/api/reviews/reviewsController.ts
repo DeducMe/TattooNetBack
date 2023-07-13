@@ -17,25 +17,19 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
         const profile = await profileModal.findOne({ userId: decoded.id });
         if (!profile) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
 
-        if (userProfileId && `${profile.type}` !== 'master') return errorHandler(res, { message: 'You are not the master' }, 500);
+        const isMaster = profile.type === 'master';
 
         const filters: { _id: string; masterProfile?: ObjectId } = {
             _id
         };
-        if (userProfileId) filters.masterProfile = profile._id;
+        if (isMaster) filters.masterProfile = profile._id;
 
         const TattooToUpdate = await tattoosModal.findOne(filters);
         if (!TattooToUpdate) return errorHandler(res, { message: 'Tattoo was not found' }, 422);
 
-        if (!!userProfileId) {
-            TattooToUpdate.updateOne({
-                type: 'completed'
-            });
-        }
-
         let body = {};
 
-        if (!!userProfileId) {
+        if (!userProfileId) {
             body = {
                 completedByMaster: true,
                 masterProfile: TattooToUpdate.masterProfile
@@ -46,12 +40,19 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
                 text: reviewText,
                 rating: starRating,
                 images,
-                userProfileId,
+                userProfileId: profile.id,
                 masterProfile: TattooToUpdate.masterProfile
             };
         }
 
-        const data = await new Reviews(body).save();
+        let data: IReviews | undefined;
+
+        if (!isMaster) data = await new Reviews(body).save();
+
+        await TattooToUpdate.updateOne({
+            type: isMaster ? 'completed' : TattooToUpdate.type,
+            reviews: data ? (TattooToUpdate.reviews.filter((item) => item !== data?._id) || []).concat([data._id]) : TattooToUpdate.reviews
+        }).exec();
 
         sendBackHandler(res, 'reviews', data);
     } catch (e) {
@@ -67,8 +68,6 @@ const getReviewsByMaster = async (req: Request, res: Response, next: NextFunctio
         if (!profile) return errorHandler(res, { message: 'Cant find that master' }, 422);
 
         let data = await reviewsModal.find({ masterProfile: _id }).populate('tattooId').exec();
-
-        console.log(data, { masterProfile: _id });
 
         sendBackHandler(res, 'reviews', data);
     } catch (e) {

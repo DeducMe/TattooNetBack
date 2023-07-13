@@ -1,8 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { ObjectId, Schema } from 'mongoose';
 import logging from '../../config/logging';
 import Currency from '../currency/currencyInterface';
 
 export interface IReviews {
+    _id: ObjectId;
     rating: number;
     text: string;
     images: string[];

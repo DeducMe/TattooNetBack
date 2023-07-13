@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { decodeToken, errorHandler, sendBackHandler } from '../../../functions/apiHandlers';
-import Profile from './profileModal';
 import profileModal from './profileModal';
+import reviewsModal from '../../reviews/reviewsModal';
+import Profile from './profileInterface';
 
 const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -25,7 +26,7 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
-    await Profile.findOneAndUpdate(
+    await profileModal.findOneAndUpdate(
         { userId: decoded.id },
         { ...req.body },
         {
@@ -53,7 +54,25 @@ const search = async (req: Request, res: Response, next: NextFunction) => {
         additionalFilters._id = _id;
     }
 
-    const result = await Profile.find(additionalFilters);
+    let result: Profile | Profile[] | any;
+    if (!_id) result = await profileModal.find(additionalFilters);
+    else {
+        result = await profileModal.findOne(additionalFilters);
+        let rating = 0;
+        if (result?.type === 'master') {
+            const reviews = await reviewsModal.find({ masterProfile: _id }).lean();
+
+            rating = Number(
+                (
+                    reviews.reduce((acc, item) => {
+                        return (acc += item.rating || 0);
+                    }, 0) / reviews.length
+                ).toFixed(2)
+            );
+        }
+        result = { ...result, rating };
+    }
+
     sendBackHandler(res, 'profile', result);
 };
 
@@ -61,7 +80,7 @@ const setCurrency = async (req: Request, res: Response, next: NextFunction) => {
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
-    await Profile.findOneAndUpdate(
+    await profileModal.findOneAndUpdate(
         { userId: decoded.id },
         { currencySet: req.body.currency },
         {

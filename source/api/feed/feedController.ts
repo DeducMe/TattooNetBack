@@ -9,14 +9,17 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
 
     const masters = await profileModal.find({ type: 'master' }).lean().exec();
 
+    console.log(masters.length);
     const tattoos = await tattoosModal
         .find({ masterProfile: { $in: masters.map((item) => item._id) } })
         .lean()
         .exec();
 
     const data = masters.map((item) => {
-        return { ...item, tattoos: tattoos.filter((el) => el.masterProfile === item._id) };
+        return { ...item, tattoos: tattoos.filter((el) => `${el.masterProfile}` === `${item._id}`) };
     });
+
+    console.log(data[0].tattoos.length);
 
     sendBackHandler(res, 'feed', data);
 };

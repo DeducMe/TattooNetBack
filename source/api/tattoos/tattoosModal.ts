@@ -11,6 +11,7 @@ export interface ITattoos extends Document {
     masterProfile: Schema.Types.ObjectId;
     userProfileId: Schema.Types.ObjectId;
     type: string;
+    reviews: Schema.Types.ObjectId[];
 }
 
 const TattoosSchema: Schema = new Schema(
@@ -23,7 +24,8 @@ const TattoosSchema: Schema = new Schema(
         categories: [{ type: Schema.Types.ObjectId, ref: 'Categories', required: false }],
         currency: { type: Schema.Types.ObjectId, ref: 'Currency', required: false },
         userProfileId: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },
-        masterProfile: { type: Schema.Types.ObjectId, ref: 'Profile', required: false }
+        masterProfile: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },
+        reviews: [{ type: Schema.Types.ObjectId, ref: 'Reviews', required: false }]
     },
     {
         timestamps: true
