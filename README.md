@@ -1,13 +1,33 @@
-This project is a an open source app for finding your Tattoo master in your city and country written using MERN stack
+# TattooNet Back-end
 
-Currently it`s my pet project and it shows my experience with express and MongoDb.
+The TattooNet app is an open-source application designed to help users find tattoo artists in their city and country. It is built using the MERN stack, which includes MongoDB, Express, React native,
+and Node.js.
 
-To start the project you need do the following
+## Project Overview
 
-Install all dependencies with `yarn`
+This project is currently a pet project that showcases my experience with Express and MongoDB. The app allows users to search for tattoo artists based on their location and provides detailed
+information about each artist, including their portfolio, ratings, and contact details.
 
-Change .env file
+## Getting Started
 
-Change source/config/config.ts file
+To start the project, follow these steps:
 
-than start it with `npm start`
+1. Install all project dependencies by running the following command:
+
+    ```
+    yarn
+    ```
+
+2. Modify the `.env` file to configure the necessary environment variables for your setup.
+
+3. Modify the `source/config/config.ts` file to customize the app's configuration according to your requirements.
+
+4. Start the app by running the following command:
+
+    ```
+    npm start
+    ```
+
+## Contact
+
+If you have any questions or suggestions regarding this project, please feel free to reach out to me at [your-email@example.com](mailto:your-email@example.com). I would be happy to hear from you!
