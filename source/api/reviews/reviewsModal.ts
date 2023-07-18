@@ -16,7 +16,7 @@ const ReviewsSchema: Schema = new Schema(
         text: { type: Schema.Types.String, required: false },
         images: [{ type: Schema.Types.String, required: false }],
         tattooId: { type: Schema.Types.ObjectId, ref: 'Tattoo', required: false },
-        masterProfile: { type: Schema.Types.ObjectId, ref: 'Master', required: false },
+        masterProfile: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },
         userProfileId: { type: Schema.Types.ObjectId, ref: 'Profile', required: false }
     },
     {

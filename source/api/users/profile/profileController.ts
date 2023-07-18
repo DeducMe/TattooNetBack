@@ -58,19 +58,6 @@ const search = async (req: Request, res: Response, next: NextFunction) => {
     if (!_id) result = await profileModal.find(additionalFilters);
     else {
         result = await profileModal.findOne(additionalFilters);
-        let rating = 0;
-        if (result?.type === 'master') {
-            const reviews = await reviewsModal.find({ masterProfile: _id }).lean();
-
-            rating = Number(
-                (
-                    reviews.reduce((acc, item) => {
-                        return (acc += item.rating || 0);
-                    }, 0) / reviews.length
-                ).toFixed(2)
-            );
-        }
-        result = { ...result, rating };
     }
 
     sendBackHandler(res, 'profile', result);

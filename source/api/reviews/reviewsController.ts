@@ -24,12 +24,13 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
         };
         if (isMaster) filters.masterProfile = profile._id;
 
+        //@ts-ignore
         const TattooToUpdate = await tattoosModal.findOne(filters);
         if (!TattooToUpdate) return errorHandler(res, { message: 'Tattoo was not found' }, 422);
 
         let body = {};
 
-        if (!userProfileId) {
+        if (isMaster) {
             body = {
                 completedByMaster: true,
                 masterProfile: TattooToUpdate.masterProfile
@@ -48,6 +49,20 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
         let data: IReviews | undefined;
 
         if (!isMaster) data = await new Reviews(body).save();
+
+        const reviews = await reviewsModal.find({ masterProfile: _id }).lean();
+
+        const rating = Number(
+            (
+                reviews.reduce((acc, item) => {
+                    return (acc += item.rating || 0);
+                }, 0) / reviews.length
+            ).toFixed(2)
+        );
+
+        console.log(data?._id, 'test');
+
+        await profileModal.findOneAndUpdate({ _id: TattooToUpdate.masterProfile }, { rating });
 
         await TattooToUpdate.updateOne({
             type: isMaster ? 'completed' : TattooToUpdate.type,

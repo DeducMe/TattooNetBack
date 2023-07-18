@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import logging from '../../config/logging';
 import Currency from '../currency/currencyInterface';
+import Profile from '../users/profile/profileInterface';
 
 export interface ITattoos extends Document {
     currency: Schema.Types.ObjectId & Currency;
@@ -8,7 +9,7 @@ export interface ITattoos extends Document {
     categories?: Schema.Types.ObjectId[];
     price: number;
     description: Schema.Types.String;
-    masterProfile: Schema.Types.ObjectId;
+    masterProfile: Schema.Types.ObjectId & Profile;
     userProfileId: Schema.Types.ObjectId;
     type: string;
     reviews: Schema.Types.ObjectId[];

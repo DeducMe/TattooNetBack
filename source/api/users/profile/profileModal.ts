@@ -14,7 +14,8 @@ const ProfileSchema: Schema = new Schema(
         },
         avatar: { type: Schema.Types.String, required: false },
         currencySet: { type: Schema.Types.ObjectId, ref: 'Currency', required: false },
-        total: { type: Schema.Types.Number, required: false }
+        total: { type: Schema.Types.Number, required: false },
+        rating: { type: Schema.Types.Number, default: 0 }
     },
     {
         timestamps: false
