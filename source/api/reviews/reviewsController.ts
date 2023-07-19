@@ -48,22 +48,23 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
 
         let data: IReviews | undefined;
 
-        if (!isMaster) data = await new Reviews(body).save();
+        if (!isMaster) {
+            data = await new Reviews(body).save();
 
-        const reviews = await reviewsModal.find({ masterProfile: _id }).lean();
+            const reviews = await reviewsModal.find({ masterProfile: _id }).lean();
 
-        const rating = Number(
-            (
-                reviews.reduce((acc, item) => {
-                    return (acc += item.rating || 0);
-                }, 0) / reviews.length
-            ).toFixed(2)
-        );
+            const rating = Number(
+                (
+                    reviews.reduce((acc, item) => {
+                        return (acc += item.rating || 0);
+                    }, 0) / reviews.length
+                ).toFixed(2)
+            );
 
-        console.log(data?._id, 'test');
+            console.log(data?._id, 'test');
 
-        await profileModal.findOneAndUpdate({ _id: TattooToUpdate.masterProfile }, { rating });
-
+            await profileModal.findOneAndUpdate({ _id: TattooToUpdate.masterProfile }, { rating });
+        }
         await TattooToUpdate.updateOne({
             type: isMaster ? 'completed' : TattooToUpdate.type,
             reviews: data ? (TattooToUpdate.reviews.filter((item) => item !== data?._id) || []).concat([data._id]) : TattooToUpdate.reviews

@@ -5,6 +5,7 @@ export default interface Profile extends Document {
     rating: number;
     currencySet: Schema.Types.ObjectId & Currency;
     name: string;
+    phone: string;
     avatar: string;
     userId: string;
     type: string;

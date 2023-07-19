@@ -29,6 +29,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         const profile = new Profile({
             userId: user._id,
             name,
+            email: login,
             type: 'user'
         });
 

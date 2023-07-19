@@ -7,8 +7,10 @@ const ProfileSchema: Schema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, required: true },
         name: { type: Schema.Types.String, required: false },
+        phone: { type: Schema.Types.String, required: false },
         type: { type: Schema.Types.String, required: false, enum: ['master', 'user'] },
         address: { type: Schema.Types.String, required: false },
+        email: { type: Schema.Types.String, required: false },
         location: {
             type: pointSchema
         },

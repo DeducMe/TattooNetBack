@@ -14,9 +14,13 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
         .lean()
         .exec();
 
+    console.log(tattoos.length);
+
     const data = masters.map((item) => {
         return { ...item, tattoos: tattoos.filter((el) => `${el.masterProfile._id}` === `${item._id}`) };
     });
+
+    console.log(data.length);
 
     sendBackHandler(res, 'feed', data);
 };
