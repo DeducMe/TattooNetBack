@@ -6,7 +6,8 @@
     "scripts": {
         "build": "rm -rf build && prettier --write source/ && tsc",
         "start": "tsc && cd build && node server.js",
-        "start-prod": "tsc && NODE_ENV=production PORT=9900 pm2 start build/server.js"
+        "start-prod": "tsc && NODE_ENV=production PORT=9900 pm2 start build/server.js",
+        "postinstall": "npm run tsc"
     },
     "author": "",
     "license": "ISC",
