@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { decodeToken, errorHandler, sendBackHandler } from '../../../functions/apiHandlers';
 import profileModal from './profileModal';
-import reviewsModal from '../../reviews/reviewsModal';
 import Profile from './profileInterface';
+import { createImage } from '../../images/imagesController';
 
 const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -12,7 +12,7 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
             return errorHandler(res, 'decode of auth header went wrong', 500);
         }
 
-        let user = await profileModal.findOne({ userId: decoded.id }).populate(['currencySet']).exec();
+        let user = await profileModal.findOne({ userId: decoded.id }).populate(['currencySet', 'avatar']).exec();
 
         if (!user) return errorHandler(res, 'Profile not found', 500);
 
@@ -22,17 +22,29 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const put = async (req: Request, res: Response, next: NextFunction) => {
+const put = async (req: Request | any, res: Response, next: NextFunction) => {
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
-    await profileModal.findOneAndUpdate(
-        { userId: decoded.id },
-        { ...req.body },
-        {
-            returnOriginal: false
+    const { ...props } = req.body;
+    const avatar = req.file;
+    //@ts-ignore
+    console.log(req.body, req.file);
+
+    let avatarId;
+    const toModify = { ...props };
+
+    if (avatar)
+        try {
+            avatarId = await createImage({ file: avatar });
+            toModify.avatar = avatarId;
+        } catch {
+            return errorHandler(res, 'something wrong with image', 422);
         }
-    );
+
+    await profileModal.findOneAndUpdate({ userId: decoded.id }, toModify, {
+        returnOriginal: false
+    });
     sendBackHandler(res, 'profile', true);
 };
 

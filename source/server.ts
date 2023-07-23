@@ -18,11 +18,14 @@ import categoriesRoute from './api/categories/categoriesRoute';
 import currencyRoute from './api/currency/currencyRoute';
 import reviewsRoute from './api/reviews/reviewsRoute';
 import feedRoute from './api/feed/feedRoute';
+import imagesRoute from './api/images/imagesRoute';
+import imagesController from './api/images/imagesController';
 
 // import errorHandler from './errorHandling';
 const NAMESPACE = 'Server';
 export const app = express();
-
+const formData = require('express-form-data');
+const os = require('os');
 /** Connect to Mongo */
 mongoose
     .connect(config.mongo.url, config.mongo.options)
@@ -41,6 +44,9 @@ docs(app, mongoose);
 /** Log the request */
 app.use((req, res, next) => {
     /** Log the req */
+
+    console.log(req.headers);
+
     logging.info(NAMESPACE, `METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`);
 
     res.on('finish', () => {
@@ -85,6 +91,7 @@ app.use('/api/', cityRoute);
 app.use('/api/', countryRoute);
 app.use('/api/', reviewsRoute);
 app.use('/api/', feedRoute);
+app.use('/api/', imagesRoute);
 
 app.delete('/api/wipe', async (req, res, next) => {
     mongoose.connection.dropDatabase();
@@ -93,4 +100,4 @@ app.delete('/api/wipe', async (req, res, next) => {
 
 const httpServer = http.createServer(app);
 console.log(config.server);
-httpServer.listen(config.server.port, config.server.hostname, () => logging.info(NAMESPACE, `Server is running on http://${config.server.hostname}:${config.server.port}/`));
+httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server is running on http://${config.server.hostname}:${config.server.port}/`));

@@ -14,7 +14,7 @@ const ProfileSchema: Schema = new Schema(
         location: {
             type: pointSchema
         },
-        avatar: { type: Schema.Types.String, required: false },
+        avatar: { type: Schema.Types.ObjectId, ref: 'Images', required: false },
         currencySet: { type: Schema.Types.ObjectId, ref: 'Currency', required: false },
         total: { type: Schema.Types.Number, required: false },
         rating: { type: Schema.Types.Number, default: 0 }

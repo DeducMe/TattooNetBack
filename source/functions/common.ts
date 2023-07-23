@@ -1,3 +1,6 @@
+// this was written before i knew about zod library
+// https://github.com/colinhacks/zod
+
 export function checkTypes<T extends { [key: string]: any }>(obj: Record<keyof T, unknown>, types: T): boolean {
     return Object.keys(types).every((key) => {
         const type = types[key];
