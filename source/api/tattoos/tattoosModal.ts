@@ -21,7 +21,7 @@ const TattoosSchema: Schema = new Schema(
         description: { type: Schema.Types.String, required: false },
         price: { type: Schema.Types.Number, required: false },
         type: { type: Schema.Types.String, required: false },
-        images: [{ type: Schema.Types.String, required: false }],
+        images: [{ type: Schema.Types.ObjectId, ref: 'Images', required: false }],
         categories: [{ type: Schema.Types.ObjectId, ref: 'Categories', required: false }],
         currency: { type: Schema.Types.ObjectId, ref: 'Currency', required: false },
         userProfileId: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },

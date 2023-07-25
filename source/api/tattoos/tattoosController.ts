@@ -4,6 +4,7 @@ import Tattoos, { ITattoos } from './tattoosModal';
 
 import profileModal from '../users/profile/profileModal';
 import reviewsModal from '../reviews/reviewsModal';
+import { createImage } from '../images/imagesController';
 
 const put = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -28,7 +29,18 @@ const put = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { name, description, categories, price, currency, images, userProfileId, masterProfile, type } = req.body;
+        let { name, description, categories, price, currency, userProfileId, masterProfile, type } = req.body;
+
+        let images: { originalname: string; mimetype: string }[] = [];
+        // sendBackHandler(res, 'tattoos', true);
+        if (req.files)
+            try {
+                (req.files as Array<Express.Multer.File>).forEach(async (item: { originalname: string; mimetype: string }) => {
+                    images = images.concat(images, [await createImage({ file: item })]);
+                });
+            } catch {
+                return errorHandler(res, 'something wrong with image', 422);
+            }
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
@@ -104,7 +116,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const data = await Tattoos.find({ ...additionalFilters })
-        .populate(['categories', 'currency', 'reviews'])
+        .populate(['categories', 'currency', 'reviews', 'images'])
         .exec();
     sendBackHandler(res, 'tattoos', data);
 };
@@ -126,6 +138,7 @@ const getMasterTattoos = async (req: Request, res: Response, next: NextFunction)
             'categories',
             'currency',
             'masterProfile',
+            'images',
             {
                 path: 'reviews',
                 populate: {
@@ -136,6 +149,12 @@ const getMasterTattoos = async (req: Request, res: Response, next: NextFunction)
                 path: 'reviews',
                 populate: {
                     path: 'masterProfile'
+                }
+            },
+            {
+                path: 'reviews',
+                populate: {
+                    path: 'images'
                 }
             }
         ])

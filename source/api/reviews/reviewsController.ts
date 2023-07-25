@@ -9,7 +9,7 @@ import reviewsModal from './reviewsModal';
 
 const completeReview = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { _id, reviewText, userProfileId, images, starRating } = req.body;
+        let { _id, reviewText, images, starRating } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
