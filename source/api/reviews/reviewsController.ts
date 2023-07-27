@@ -6,10 +6,11 @@ import profileModal from '../users/profile/profileModal';
 import tattoosModal from '../tattoos/tattoosModal';
 import { ObjectId } from 'mongoose';
 import reviewsModal from './reviewsModal';
+import { getImagesFromReqFiles } from '../../functions/common';
 
 const completeReview = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { _id, reviewText, images, starRating } = req.body;
+        let { _id, reviewText, starRating } = req.body;
 
         const decoded = await decodeToken(req?.headers?.authorization || '');
         if (!decoded) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
@@ -22,6 +23,7 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
         const filters: { _id: string; masterProfile?: ObjectId } = {
             _id
         };
+
         if (isMaster) filters.masterProfile = profile._id;
 
         //@ts-ignore
@@ -30,6 +32,14 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
 
         let body = {};
 
+        let images: { originalname: string; mimetype: string }[] = [];
+
+        if (req.files)
+            try {
+                images = await getImagesFromReqFiles(req.files);
+            } catch {
+                return errorHandler(res, 'something wrong with image', 422);
+            }
         if (isMaster) {
             body = {
                 completedByMaster: true,
@@ -50,8 +60,9 @@ const completeReview = async (req: Request, res: Response, next: NextFunction) =
 
         if (!isMaster) {
             data = await new Reviews(body).save();
+            console.log(body, 'ALO');
 
-            const reviews = await reviewsModal.find({ masterProfile: _id }).lean();
+            const reviews = await reviewsModal.find({ masterProfile: TattooToUpdate.masterProfile });
 
             const rating = Number(
                 (

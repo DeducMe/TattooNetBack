@@ -6,7 +6,7 @@ const multerUpload = multer({ storage, fileFilter });
 
 const router = express.Router();
 
-router.post('/reviews', multerUpload.single('image'), controller.completeReview);
+router.post('/reviews', multerUpload.any(), controller.completeReview);
 router.post('/reviews/master', controller.getReviewsByMaster);
 
 export default router;

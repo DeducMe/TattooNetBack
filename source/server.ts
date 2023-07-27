@@ -45,8 +45,6 @@ docs(app, mongoose);
 app.use((req, res, next) => {
     /** Log the req */
 
-    console.log(req.headers);
-
     logging.info(NAMESPACE, `METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`);
 
     res.on('finish', () => {

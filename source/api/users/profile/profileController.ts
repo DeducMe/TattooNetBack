@@ -32,7 +32,7 @@ const put = async (req: Request | any, res: Response, next: NextFunction) => {
     console.log(req.body, req.file);
 
     let avatarId;
-    const toModify = { ...props };
+    const toModify = props;
 
     if (avatar)
         try {
@@ -67,9 +67,9 @@ const search = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     let result: Profile | Profile[] | any;
-    if (!_id) result = await profileModal.find(additionalFilters);
+    if (!_id) result = await profileModal.find(additionalFilters).populate('avatar');
     else {
-        result = await profileModal.findOne(additionalFilters);
+        result = await profileModal.findOne(additionalFilters).populate('avatar');
     }
 
     sendBackHandler(res, 'profile', result);

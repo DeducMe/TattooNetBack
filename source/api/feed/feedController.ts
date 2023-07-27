@@ -7,17 +7,15 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
-    const masters = await profileModal.find({ type: 'master' }).lean().exec();
+    const masters = await profileModal.find({ type: 'master' }).populate('avatar').exec();
 
     const tattoos = await tattoosModal
         .find({ masterProfile: { $in: masters.map((item) => item._id) } })
-        .lean()
+        .populate('images')
         .exec();
 
-    console.log(tattoos.length);
-
     const data = masters.map((item) => {
-        return { ...item, tattoos: tattoos.filter((el) => `${el.masterProfile._id}` === `${item._id}`) };
+        return { master: item, tattoos: tattoos.filter((el) => `${el.masterProfile._id}` === `${item._id}`) };
     });
 
     console.log(data.length);

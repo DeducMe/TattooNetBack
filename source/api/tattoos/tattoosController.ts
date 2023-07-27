@@ -5,6 +5,7 @@ import Tattoos, { ITattoos } from './tattoosModal';
 import profileModal from '../users/profile/profileModal';
 import reviewsModal from '../reviews/reviewsModal';
 import { createImage } from '../images/imagesController';
+import { getImagesFromReqFiles } from '../../functions/common';
 
 const put = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -35,9 +36,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         // sendBackHandler(res, 'tattoos', true);
         if (req.files)
             try {
-                (req.files as Array<Express.Multer.File>).forEach(async (item: { originalname: string; mimetype: string }) => {
-                    images = images.concat(images, [await createImage({ file: item })]);
-                });
+                images = await getImagesFromReqFiles(req.files);
             } catch {
                 return errorHandler(res, 'something wrong with image', 422);
             }
