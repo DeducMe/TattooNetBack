@@ -90,6 +90,9 @@ app.use('/api/', reviewsRoute);
 app.use('/api/', feedRoute);
 app.use('/api/', imagesRoute);
 app.use('/api/', favoritesRoute);
+app.get('/', async (req, res, next) => {
+    return res.send('Hello!');
+});
 
 app.delete('/api/wipe', async (req, res, next) => {
     mongoose.connection.dropDatabase();
