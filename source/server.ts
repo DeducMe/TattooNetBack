@@ -19,8 +19,7 @@ import currencyRoute from './api/currency/currencyRoute';
 import reviewsRoute from './api/reviews/reviewsRoute';
 import feedRoute from './api/feed/feedRoute';
 import imagesRoute from './api/images/imagesRoute';
-import imagesController from './api/images/imagesController';
-
+import favoritesRoute from './api/favorites/favoritesRoute';
 // import errorHandler from './errorHandling';
 const NAMESPACE = 'Server';
 export const app = express();
@@ -90,6 +89,7 @@ app.use('/api/', countryRoute);
 app.use('/api/', reviewsRoute);
 app.use('/api/', feedRoute);
 app.use('/api/', imagesRoute);
+app.use('/api/', favoritesRoute);
 
 app.delete('/api/wipe', async (req, res, next) => {
     mongoose.connection.dropDatabase();

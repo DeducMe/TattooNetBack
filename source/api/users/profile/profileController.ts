@@ -28,9 +28,7 @@ const put = async (req: Request | any, res: Response, next: NextFunction) => {
 
     const { ...props } = req.body;
     const avatar = req.file;
-    //@ts-ignore
-    console.log(req.body, req.file);
-
+    console.log(props.styles);
     let avatarId;
     const toModify = props;
 

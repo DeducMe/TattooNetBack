@@ -10,7 +10,8 @@ const FavoritesSchema: Schema = new Schema(
     {
         type: { type: Schema.Types.String, enum: ['master', 'tattoo'], required: false },
         master: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },
-        tattoo: { type: Schema.Types.ObjectId, ref: 'Tattoo', required: false }
+        tattoo: { type: Schema.Types.ObjectId, ref: 'Tattoo', required: false },
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: false }
     },
     {
         timestamps: false

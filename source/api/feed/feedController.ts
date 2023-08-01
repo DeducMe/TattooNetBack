@@ -11,7 +11,16 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
 
     const tattoos = await tattoosModal
         .find({ masterProfile: { $in: masters.map((item) => item._id) } })
-        .populate('images')
+        .populate([
+            'images',
+            'reviews',
+            {
+                path: 'reviews',
+                populate: {
+                    path: 'images'
+                }
+            }
+        ])
         .exec();
 
     const data = masters.map((item) => {

@@ -94,7 +94,7 @@ const getReviewsByMaster = async (req: Request, res: Response, next: NextFunctio
         const profile = await profileModal.findOne({ _id });
         if (!profile) return errorHandler(res, { message: 'Cant find that master' }, 422);
 
-        let data = await reviewsModal.find({ masterProfile: _id }).populate('tattooId').exec();
+        let data = await reviewsModal.find({ masterProfile: _id }).populate(['tattooId', 'images']).exec();
 
         sendBackHandler(res, 'reviews', data);
     } catch (e) {
