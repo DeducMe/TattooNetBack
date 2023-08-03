@@ -11,6 +11,6 @@ router.post('/profile/search', controller.search);
 
 router.put('/profile/currency', controller.setCurrency);
 
-router.route('/profile').post(multerUpload.single('image'), controller.put);
+router.route('/profile').post(multerUpload.single('image'), controller.updateUserProfile);
 
 export default router;

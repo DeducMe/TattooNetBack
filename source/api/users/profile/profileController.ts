@@ -3,6 +3,7 @@ import { decodeToken, errorHandler, sendBackHandler } from '../../../functions/a
 import profileModal from './profileModal';
 import Profile from './profileInterface';
 import { createImage } from '../../images/imagesController';
+import { put } from '@vercel/blob';
 
 const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -22,13 +23,19 @@ const get = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const put = async (req: Request | any, res: Response, next: NextFunction) => {
+const updateUserProfile = async (req: Request | any, res: Response, next: NextFunction) => {
     const decoded = await decodeToken(req?.headers?.authorization || '');
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
     const { ...props } = req.body;
     const avatar = req.file;
-    console.log(props.styles);
+    console.log(req.file.path, req.body, 'test');
+    const blob = await put(req.file.path, req.file, {
+        access: 'public'
+    });
+
+    console.log(blob);
+
     let avatarId;
     const toModify = props;
 
@@ -87,4 +94,4 @@ const setCurrency = async (req: Request, res: Response, next: NextFunction) => {
     sendBackHandler(res, 'profile', true);
 };
 
-export default { search, get, put, setCurrency };
+export default { search, get, updateUserProfile, setCurrency };
