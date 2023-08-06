@@ -15,7 +15,13 @@ export async function createImage({ file, name, description }: { file: { buffer:
         description
     };
 
+    console.log(body);
+
+    if (!body.imageObject.data) throw new Error(body.imageObject.data);
+
     const data = await new Images(body).save();
+
+    if (!data?.imageObject?.data) throw new Error(data.imageObject.data.toString());
 
     return data._id;
 }
