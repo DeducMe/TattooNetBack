@@ -21,7 +21,7 @@ export async function createImage({ file, name, description }: { file: { buffer:
 
     const data = await new Images(body).save();
 
-    if (!data?.imageObject?.data) throw new Error(data.imageObject.data.toString());
+    if (!data?.imageObject || !data._id) throw new Error(JSON.stringify(data));
 
     return data._id;
 }
@@ -42,4 +42,19 @@ const create = async (req: Request | any, res: Response, next: NextFunction) => 
     }
 };
 
-export default { create };
+const find = async (req: Request | any, res: Response, next: NextFunction) => {
+    try {
+        let { _id } = req.body;
+        console.log(req.body, req.file);
+
+        const decoded = await decodeToken(req?.headers?.authorization || '');
+        if (!decoded) return errorHandler(res, { message: 'decode of auth header went wrong' }, 500);
+
+        const id = await Images.findById(_id);
+
+        sendBackHandler(res, 'images', id);
+    } catch (e) {
+        errorHandler(res, e);
+    }
+};
+export default { create, find };

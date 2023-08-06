@@ -29,5 +29,6 @@ export const fileFilter = (req: any, file: { mimetype: string }, cb: (arg0: null
 export const multerUpload = multer();
 
 router.route('/images').post(multerUpload.single('image'), controller.create);
+router.post('/images/find', controller.find);
 
 export default router;
