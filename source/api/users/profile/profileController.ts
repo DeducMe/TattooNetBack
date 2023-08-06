@@ -3,7 +3,6 @@ import { decodeToken, errorHandler, sendBackHandler } from '../../../functions/a
 import profileModal from './profileModal';
 import Profile from './profileInterface';
 import { createImage } from '../../images/imagesController';
-import { put } from '@vercel/blob';
 
 const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
