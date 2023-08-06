@@ -23,8 +23,7 @@ import favoritesRoute from './api/favorites/favoritesRoute';
 // import errorHandler from './errorHandling';
 const NAMESPACE = 'Server';
 export const app = express();
-const formData = require('express-form-data');
-const os = require('os');
+
 /** Connect to Mongo */
 mongoose
     .connect(config.mongo.url, config.mongo.options)

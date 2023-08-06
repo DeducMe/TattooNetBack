@@ -1,7 +1,8 @@
 import express from 'express';
 import controller from './profileController';
 import multer from 'multer';
-const multerUpload = multer();
+const storage = multer.memoryStorage();
+const multerUpload = multer({ storage: storage });
 
 const router = express.Router();
 
