@@ -28,20 +28,15 @@ const updateUserProfile = async (req: Request | any, res: Response, next: NextFu
     if (!decoded) return errorHandler(res, 'decode of auth header went wrong', 500);
 
     const { ...props } = req.body;
-    const avatar = req.file;
+    const avatar = req.file.buffer;
     console.log(req.file.path, req.body, 'test');
-    const blob = await put(req.file.path, req.file, {
-        access: 'public'
-    });
-
-    console.log(blob);
 
     let avatarId;
     const toModify = props;
 
     if (avatar)
         try {
-            avatarId = await createImage({ file: avatar });
+            avatarId = await createImage({ file: { buffer: req.file.buffer, mimetype: req.file.mimetype } });
             toModify.avatar = avatarId;
         } catch {
             return errorHandler(res, 'something wrong with image', 422);

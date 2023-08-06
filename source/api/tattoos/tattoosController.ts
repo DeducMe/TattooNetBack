@@ -4,7 +4,6 @@ import Tattoos, { ITattoos } from './tattoosModal';
 
 import profileModal from '../users/profile/profileModal';
 import reviewsModal from '../reviews/reviewsModal';
-import { createImage } from '../images/imagesController';
 import { getImagesFromReqFiles } from '../../functions/common';
 
 const put = async (req: Request, res: Response, next: NextFunction) => {

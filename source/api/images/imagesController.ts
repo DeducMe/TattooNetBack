@@ -5,10 +5,10 @@ import Images, { IImages } from './imagesModal';
 import path from 'path';
 import fs from 'fs';
 
-export async function createImage({ file, name, description }: { file: { originalname: string; mimetype: string }; name?: string; description?: string }) {
+export async function createImage({ file, name, description }: { file: { buffer: Buffer; mimetype: string }; name?: string; description?: string }) {
     const body = {
         imageObject: {
-            data: fs.readFileSync(path.join(__dirname.replace('/api/images', '') + '/uploads/' + file.originalname)),
+            data: file.buffer,
             contentType: file.mimetype
         },
         name,

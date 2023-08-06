@@ -5,11 +5,7 @@ import path from 'path';
 
 const router = express.Router();
 const multer = require('multer');
-const uploadFolder = path.join(__dirname.replace('/api/images', ''), 'uploads');
-console.log('uploadFolder : ', uploadFolder);
 
-//Create a folder if not exist
-fs.mkdirSync(uploadFolder, { recursive: true });
 export const storage = multer.diskStorage({
     destination: function (_req: any, file: any, cb: (arg0: null, arg1: any) => any) {
         console.log('file : ', file);
@@ -30,7 +26,7 @@ export const fileFilter = (req: any, file: { mimetype: string }, cb: (arg0: null
     }
 };
 
-export const multerUpload = multer({ storage: storage, fileFilter: fileFilter });
+export const multerUpload = multer();
 
 router.route('/images').post(multerUpload.single('image'), controller.create);
 

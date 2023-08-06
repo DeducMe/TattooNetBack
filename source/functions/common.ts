@@ -40,7 +40,7 @@ export async function getImagesFromReqFiles(
     // sendBackHandler(res, 'tattoos', true);
     if (files)
         await Promise.all(
-            (files as Array<Express.Multer.File>).map(async (item: { originalname: string; mimetype: string }) => {
+            (files as Array<Express.Multer.File>).map(async (item: { buffer: Buffer; mimetype: string }) => {
                 images = images.concat(images, [await createImage({ file: item })]);
 
                 return images;

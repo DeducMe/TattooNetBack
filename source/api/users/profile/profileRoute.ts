@@ -1,8 +1,7 @@
 import express from 'express';
 import controller from './profileController';
-import { fileFilter, storage } from '../../images/imagesRoute';
 import multer from 'multer';
-const multerUpload = multer({ storage: storage, fileFilter: fileFilter });
+const multerUpload = multer();
 
 const router = express.Router();
 
